@@ -33,6 +33,10 @@ export class VacancyController {
     const perPage = parseInt(request.query.perPage as any) || 10
     const lastPage = Math.ceil(total / perPage)
 
+    if (lastPage < page) {
+      throw new NotFoundException()
+    }
+
     queryBuilder.offset((page - 1) * perPage).limit(perPage)
 
     return {
