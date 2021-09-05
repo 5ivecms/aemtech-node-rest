@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { Request } from 'express';
-import { VacancyModel } from './../../../models';
-import { Vacancy } from './../entities/vacanсy.entity';
-import { VacancyService } from './../services/vacancy.services';
+import { VacancyModel } from '../../models';
+import { Vacancy } from '../../entities';
+import { VacancyService } from './vacancy.service';
 
 @Controller('rest/vacancy')
 export class VacancyController {
@@ -15,7 +15,7 @@ export class VacancyController {
   
     const search = request.query.search
     if (search) {
-      queryBuilder.where('vacancy.title LIKE :s', {s: `%${search}%`})
+      queryBuilder.where('vacancy.title LIKE :s', {s: `%${request.query.search}%`})
     }
 
     const sort: any = request.query.sort
@@ -23,9 +23,9 @@ export class VacancyController {
       queryBuilder.orderBy('vacancy.id', sort.toUpperCase())
     }
 
-    const isPublish: any = request.query.is_publish
+    const isPublish: any = request.query.isPublish
     if (isPublish) {
-      queryBuilder.where('vacancy.isPublish = :p', {p: isPublish})
+      queryBuilder.where('vacancy.isPublish = :p', {p: request.query.isPublish})
     }
 
     const total = await queryBuilder.getCount()

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult, UpdateResult } from 'typeorm';
-import { Vacancy } from './../entities/vacanсy.entity';
-import { VacancyModel } from './../../../models';
+import { Vacancy } from '../../entities';
+import { VacancyModel } from '../../models';
 
 @Injectable()
 export class VacancyService {
