@@ -14,4 +14,3 @@ export class Vacancy {
   @Column({ default: true })
   isPublish: boolean;
 }
-
