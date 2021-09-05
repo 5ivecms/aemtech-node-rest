@@ -31,4 +31,8 @@ export class VacancyService {
   async remove(id: number): Promise<DeleteResult> {
     return await this.vacancyRepository.delete(id);
   }
+
+  async queryBuilder(entity: string) {
+    return this.vacancyRepository.createQueryBuilder(entity)
+  }
 }

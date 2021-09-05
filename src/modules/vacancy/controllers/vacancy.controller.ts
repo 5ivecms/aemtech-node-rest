@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { Request } from 'express';
 import { VacancyModel } from './../../../models';
 import { Vacancy } from './../entities/vacanсy.entity';
 import { VacancyService } from './../services/vacancy.services';
@@ -9,8 +10,38 @@ export class VacancyController {
   constructor(private readonly vacancyService: VacancyService) {}
 
   @Get()
-  async actionIndex(): Promise<Vacancy[]> {
-    return await this.vacancyService.findAll()
+  async actionIndex(@Req() request: Request) {
+    const queryBuilder = await this.vacancyService.queryBuilder('vacancy')
+  
+    const search = request.query.search
+    if (search) {
+      queryBuilder.where('vacancy.title LIKE :s', {s: `%${search}%`})
+    }
+
+    const sort: any = request.query.sort
+    if (sort) {
+      queryBuilder.orderBy('vacancy.id', sort.toUpperCase())
+    }
+
+    const isPublish: any = request.query.is_publish
+    if (isPublish) {
+      queryBuilder.where('vacancy.isPublish = :p', {p: isPublish})
+    }
+
+    const total = await queryBuilder.getCount()
+    const page: number = parseInt(request.query.page as any) || 1
+    const perPage = parseInt(request.query.perPage as any) || 10
+    const lastPage = Math.ceil(total / perPage)
+
+    queryBuilder.offset((page - 1) * perPage).limit(perPage)
+
+    return {
+      items: await queryBuilder.getMany(),
+      total,
+      page,
+      perPage,
+      lastPage
+    }
   }
 
   @Get(':id')
