@@ -15,17 +15,17 @@ export class VacancyController {
   
     const search = request.query.search
     if (search) {
-      queryBuilder.where('vacancy.title LIKE :s', {s: `%${request.query.search}%`})
+      queryBuilder.andWhere('vacancy.title LIKE :s', {s: `%${request.query.search}%`})
+    }
+
+    const isPublish: any = request.query.isPublish
+    if (isPublish) {
+      queryBuilder.andWhere('vacancy.isPublish = :p', {p: request.query.isPublish})
     }
 
     const sort: any = request.query.sort
     if (sort) {
       queryBuilder.orderBy('vacancy.id', sort.toUpperCase())
-    }
-
-    const isPublish: any = request.query.isPublish
-    if (isPublish) {
-      queryBuilder.where('vacancy.isPublish = :p', {p: request.query.isPublish})
     }
 
     const total = await queryBuilder.getCount()
