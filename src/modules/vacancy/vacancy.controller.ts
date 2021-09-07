@@ -31,14 +31,10 @@ export class VacancyController {
     const total = await queryBuilder.getCount()
     const page: number = parseInt(request.query.page as any) || 1
     const perPage = parseInt(request.query.perPage as any) || 10
-    const lastPage = Math.ceil(total / perPage)
-
-    if (lastPage < page) {
-      throw new NotFoundException()
-    }
+    const lastPage = Math.ceil(total / perPage) || 1
 
     queryBuilder.offset((page - 1) * perPage).limit(perPage)
-
+    
     return {
       items: await queryBuilder.getMany(),
       total,
